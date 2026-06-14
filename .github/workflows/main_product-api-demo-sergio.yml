@@ -35,31 +35,21 @@ jobs:
           name: .net-app
           path: ${{env.DOTNET_ROOT}}/myapp
 
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
-    permissions:
-      id-token: write #This is required for requesting the JWT
-      contents: read #This is required for actions/checkout
+ deploy:
+  runs-on: ubuntu-latest
+  needs: build
 
-    steps:
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v4
-        with:
-          name: .net-app
-      
-      - name: Login to Azure
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_8974D16409ED49B1888F3518E67EECB0 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_3FC9D76CF50846B09C569D68E88D0C28 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_0D6B6DD365D34C4FA0EBB0F5EEFC3D5D }}
+  steps:
+    - name: Download artifact from build job
+      uses: actions/download-artifact@v4
+      with:
+        name: .net-app
+        path: ./.net-app
 
-      - name: Deploy to Azure Web App
-        id: deploy-to-webapp
-        uses: azure/webapps-deploy@v3
-        with:
-          app-name: 'product-api-demo-sergio'
-          slot-name: 'Production'
-          package: .
+    - name: Deploy to Azure Web App
+      uses: azure/webapps-deploy@v3
+      with:
+        app-name: product-api-demo-sergio
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+        package: ./.net-app
           
