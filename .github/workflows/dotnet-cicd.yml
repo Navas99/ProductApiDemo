@@ -1,0 +1,42 @@
+name: CI/CD .NET API
+
+on:
+  push:
+    branches:
+      - main
+
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar código
+        uses: actions/checkout@v4
+
+      - name: Instalar .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restaurar dependencias
+        run: dotnet restore
+
+      - name: Compilar solución
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Ejecutar tests
+        run: dotnet test --configuration Release --no-build --verbosity normal
+
+      - name: Publicar aplicación
+        run: dotnet publish ProductApi/ProductApi.csproj --configuration Release --output ./publish
+
+      - name: Subir artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: product-api
+          path: ./publish
