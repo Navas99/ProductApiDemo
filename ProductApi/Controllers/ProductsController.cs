@@ -12,7 +12,7 @@ public class ProductsController : ControllerBase
         new Product
         {
             Id = 1,
-            Name = "Portátil",
+            Name = "Portátil MSI",
             Price = 999
         },
         new Product
